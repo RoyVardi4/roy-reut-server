@@ -1,2 +1,1 @@
-# roy-reut-server
-# Hello!!!
+# Reut and Roy Server project
