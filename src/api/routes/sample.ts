@@ -13,6 +13,7 @@ export default (app: Router) => {
   route.get('/', (req, res) => {
     return res.send('hi there!') 
   })
+  
   // const prisma = new PrismaClient();
   // const sampleServiceInstance = Container.get(AuthService);
 
