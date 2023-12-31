@@ -11,14 +11,30 @@ const route = Router();
 export default (app: Router) => {
   app.use("/recipes", route);
 
-  route.get('/complexSearch', async (req, res) => {
-
+  route.get('/complexSearch', async (req:Request, res:Response) => {
     const options = {
       method: 'GET',
       url: 'https://api.spoonacular.com/recipes/complexSearch',
       params: {
         query: req.query.queryString,
       },
+      headers: {
+        'x-api-key': 'ee8b40f50b414ed5b735bb593bc5c8d5'
+      }
+    };
+
+    try {
+      const response = await axios.request(options);
+      res.json(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  })
+
+  route.get('/:id/information', async (req:Request, res:Response) => {
+    const options = {
+      method: 'GET',
+      url: `https://api.spoonacular.com/recipes/${req.params.id}/information`,
       headers: {
         'x-api-key': 'ee8b40f50b414ed5b735bb593bc5c8d5'
       }
