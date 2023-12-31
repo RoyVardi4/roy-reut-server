@@ -31,6 +31,7 @@ export default (app: Router) => {
       console.error(error);
     }
   })
+  
   // const prisma = new PrismaClient();
   // const sampleServiceInstance = Container.get(AuthService);
 
