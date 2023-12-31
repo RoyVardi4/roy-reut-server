@@ -25,10 +25,11 @@ const register = async(req, res, next) => {
             'email':email,
             'password':encryptedPassword
         })
+        
         const newUser = await user.save()
         res.status(200).send(newUser)
     } catch (err) {
-        return sendError(res, (err instanceof Error) ? 'failed login: ' + err.message : 'failed registration')
+        return sendError(res, (err instanceof Error) ? 'failed registration: ' + err.message : 'failed registration')
     }        
 }
 
@@ -64,7 +65,7 @@ const login = async(req, res, next) => {
 const sendError = (res, message?) => {
     return res.status(400).send({
         'status' : 'fail',
-        'message' : message == null ? 'not implemented' : message
+        'message' : message == null ? 'unknown error' : message
     })   
 }
 

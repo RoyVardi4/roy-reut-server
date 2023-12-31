@@ -40,11 +40,6 @@ async function startServer() {
 
   `)}))
   .catch((error) => console.log(error.message));
-  
-
-  // const db = mongoose.connection
-  // db.on('error', error => {console.log(error)})
-  // db.on('open', () => {console.log('cocnnected to mongo')})
 }
 
 startServer();

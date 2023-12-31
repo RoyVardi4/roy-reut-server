@@ -7,12 +7,6 @@ const route = Router();
 export default (app: Router) => {
   app.use("/auth", route);
 
-  route.get('/', authenticate, (req, res) => {
-    res.status(200).json({
-      "message" : "tut is here"
-    });
-  })
-
   route.post('/register', register)
 
   route.post('/login', login)

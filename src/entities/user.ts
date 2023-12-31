@@ -3,8 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose'
 interface IUser extends Document {
     password: string;
     email: string;
-    // You can add more fields as needed
-  }
+}
 
 const userSchema = new Schema({
     email: {
