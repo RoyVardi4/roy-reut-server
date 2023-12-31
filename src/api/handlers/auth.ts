@@ -1,11 +1,27 @@
 import UserModel from "../../entities/user"
+import bcrypt from "bcrypt"
 
     const login = async(req, res, next) => {
         console.log('login')
-        res.status(400).send({
-            'status' : 'fail',
-            'message' : 'not implemented'
-        })    
+        const email = req.body.email
+        const password = req.body.password
+
+        if (email == null || password == null) {
+            return sendError(res, 'one of the fields is missing')
+        }
+
+        try {
+            const user = await UserModel.findOne({'email':email})
+
+            if (user == null) return sendError(res, 'user not found')
+
+            const match = await bcrypt.compare(password, user.password)
+            if (!match) return sendError(res, 'password is wrong')
+
+            res.status(200).send('login has succeded')
+        } catch(err) {
+            return sendError(res, 'failed login')
+        }
     }
 
     const register = async(req, res, next) => {
@@ -23,16 +39,18 @@ import UserModel from "../../entities/user"
             if (exists) {
                 return sendError(res, 'user already registered')
             }
+            
+            const salt = await bcrypt.genSalt(10)
+            const encryptedPassword = await bcrypt.hash(password, salt)
 
             const user = new UserModel({
                 'email':email,
-                'password':password
+                'password':encryptedPassword
             })
-
             const newUser = await user.save()
             res.status(200).send(newUser)
         } catch (err) {
-            return sendError(res)
+            return sendError(res, 'failed registration')
         }        
     }
 
