@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
+import { register, login, logout } from "../handlers/auth";
 // import { Container } from "typedi";
 // import AuthService from "../../services/auth";
 // import { IUserInput } from "../../interfaces/IUser";
@@ -13,6 +14,13 @@ export default (app: Router) => {
   route.get('/', (req, res) => {
     return res.send('hi there!') 
   })
+
+  route.post('/register', register)
+
+  route.post('/login', login)
+
+  route.post('/logout', logout)
+
   
   // const prisma = new PrismaClient();
   // const sampleServiceInstance = Container.get(AuthService);
