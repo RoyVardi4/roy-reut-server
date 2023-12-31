@@ -4,14 +4,32 @@ import { Router, Request, Response, NextFunction } from "express";
 // import { IUserInput } from "../../interfaces/IUser";
 // import middlewares from "../middlewares";
 // import { celebrate, Joi } from "celebrate";
+import axios from 'axios';
 
 const route = Router();
 
 export default (app: Router) => {
-  app.use("/auth", route);
+  app.use("/recipes", route);
 
-  route.get('/', (req, res) => {
-    return res.send('hi there!') 
+  route.get('/complexSearch', async (req, res) => {
+
+    const options = {
+      method: 'GET',
+      url: 'https://api.spoonacular.com/recipes/complexSearch',
+      params: {
+        query: req.query.queryString,
+      },
+      headers: {
+        'x-api-key': 'ee8b40f50b414ed5b735bb593bc5c8d5'
+      }
+    };
+
+    try {
+      const response = await axios.request(options);
+      res.json(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   })
   // const prisma = new PrismaClient();
   // const sampleServiceInstance = Container.get(AuthService);
