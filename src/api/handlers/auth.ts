@@ -1,5 +1,6 @@
 import UserModel from "../../entities/user"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
     const login = async(req, res, next) => {
         console.log('login')
@@ -18,7 +19,13 @@ import bcrypt from "bcrypt"
             const match = await bcrypt.compare(password, user.password)
             if (!match) return sendError(res, 'password is wrong')
 
-            res.status(200).send('login has succeded')
+            const accessToken = await jwt.sign(
+                {"_id":user._id},
+                process.env.ACCESS_TOKEM_SECRET,
+                {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
+            )
+
+            res.status(200).send({'access token':accessToken})
         } catch(err) {
             return sendError(res, 'failed login')
         }
