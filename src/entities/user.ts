@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose'
 interface IUser extends Document {
     password: string;
     email: string;
+    tokens: String[];
 }
 
 const userSchema = new Schema({
@@ -13,6 +14,9 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    tokens: {
+        type: [String]
     }
 })
 

@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { register, login, logout } from "../handlers/auth";
+import { register, login, logout, refreshToken } from "../handlers/auth";
 import { authenticate } from "../middlewares/authMiddleware";
 
 const route = Router();
@@ -12,4 +12,6 @@ export default (app: Router) => {
   route.post('/login', login)
 
   route.post('/logout', authenticate, logout)
+
+  route.post('/refreshToken', refreshToken)
 };

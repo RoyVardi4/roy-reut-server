@@ -56,7 +56,15 @@ const login = async(req, res, next) => {
             {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
         )
 
-        res.status(200).send({'access token':accessToken})
+        const refreshToken = await jwt.sign(
+            {"_id":user._id},
+            process.env.REFRESH_TOKEN_SECRET,            
+        )
+
+        res.status(200).send({
+            'accessToken':accessToken,
+            'refreshToken':refreshToken
+        })
     } catch(err) {
         return sendError(res, (err instanceof Error) ? 'failed login: ' + err.message : 'failed login')
     }
@@ -77,4 +85,49 @@ const logout = async(req, res, next) => {
     })   
 }
 
-export { register, login, logout };
+const refreshToken = async(req, res, next) => {
+    const authHeaders = req.headers.authorization
+    const token = authHeaders 
+
+    if (token == null) return res.sendStatus(401)
+
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo) => {
+        if (err) return res.status(403).send(err.message)
+        const userId = userInfo._id
+
+        try {
+            const user = await UserModel.findById(userId)
+            
+            if (user == null) return res.status(403).send('Invalid request')
+            
+            if (!user.tokens.includes(token)) {
+                user.tokens = []
+                await user.save()
+                return res.status(403).send('Invalid request')
+            }
+
+            const accessToken = await jwt.sign(
+                {"_id":user._id},
+                process.env.ACCESS_TOKEN_SECRET,
+                {expiresIn: process.env.JWT_TOKEN_EXPIRATION}
+            )
+    
+            const refreshToken = await jwt.sign(
+                {"_id":user._id},
+                process.env.REFRESH_TOKEN_SECRET,            
+            )
+
+            user.tokens[user.tokens.indexOf(token)] = refreshToken
+            await user.save()
+            res.status(200).send({
+                'accessToken':accessToken,
+                'refreshToken':refreshToken
+            })
+        } catch (err) {
+            return sendError(res, (err instanceof Error) ? 'refresh error: ' + err.message : 'refresh error')
+        }
+    }) 
+}
+
+
+export { register, login, logout, refreshToken };
