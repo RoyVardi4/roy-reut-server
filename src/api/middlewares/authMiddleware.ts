@@ -1,16 +1,33 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
+import { refreshToken } from "../handlers/auth";
 
-const authenticate = async(req,res,next) => {
-    const authHeaders = req.headers.authorization
-    const token = authHeaders 
+const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const accessToken = req.headers.authorization;
+  const refreshTokenr = req.headers.refreshToken;
 
-    if (token == null) return res.sendStatus(401)
+  if (!accessToken && !refreshTokenr)
+    return res.sendStatus(401).send("Access Denied. No token provided.");
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) return res.status(403).send(err.message)
-        req.user = user
-        next()
-    })
-}
+  try {
+    const user = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    req["user"] = user;
+    next();
+  } catch (error) {
+    if (!refreshTokenr) {
+      return res.status(401).send("Access Denied. No refresh token provided.");
+    }
 
-export {authenticate}
+    try {
+      refreshToken(req, res, next)
+    } catch (error) {
+      return res.status(400).send("Invalid Token.");
+    }
+  }
+};
+
+export { authenticate };
