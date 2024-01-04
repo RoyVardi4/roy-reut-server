@@ -89,10 +89,12 @@ const sendError = (res: Response, message?: string) => {
 
 const logout = async (req: Request, res: Response, next: NextFunction) => {
   console.log("logout");
-  res.status(400).send({
-    status: "fail",
-    message: "not implemented",
-  });
+  res
+  .status(200)
+  .send({
+      'accessToken':'',
+      'refreshToken':''
+  })
 };
 
 const refreshToken = async (
