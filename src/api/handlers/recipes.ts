@@ -1,7 +1,8 @@
 import axios from "axios";
 import { Request, Response } from "express";
-import RecipeModel from "../../entities/recipe";
 import path from "path";
+import RecipeModel from "../../entities/recipe";
+import { ObjectId } from "mongodb";
 
 const RECIPES_API =
   process.env.EXTERNAL_API || "https://api.spoonacular.com/recipes";
@@ -74,30 +75,42 @@ const getMyRecipes = async (req: Request, res: Response) => {
 
 const getMyRecipesImages = async (req: Request, res: Response) => {
   try {
-    const { filename } = req.params;
-  
-    // Validate and sanitize the filename before constructing the path
-    if (/^[a-zA-Z0-9-.]+$/.test(filename) && filename) {
-      const imagePath = path.join(path.resolve(), "/uploads/", filename);
-      return res.sendFile(imagePath);
-    } else {
-      return res.status(400).send("Invalid filename");
-    }
-  } catch(e) {
-    return res.status(500).send(e.message)
+    const { recipeId } = req.params;
+
+    const recipe = await RecipeModel.findById(new ObjectId(recipeId));
+
+    const imagePath = path.join(path.resolve(), "/uploads/", recipe.file);
+    return res.sendFile(imagePath);
+  } catch (e) {
+    return res.status(500).send(e);
   }
 };
 
 const createNewRecipe = async (req: Request, res: Response) => {
+  const { title, instructions, publisherUserId } = req.body.recipe;
   try {
     const recipe = new RecipeModel({
-      title: "second new recipe!",
-      instructions: "very important instructions...",
-      publisherUserId: "vardiroy4@gmail.com",
+      title: title,
+      instructions: instructions,
+      publisherUserId: publisherUserId,
     });
 
     const newRecipe = await recipe.save();
     return res.json(newRecipe);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+const uploadImageToRecipe = async (req: Request, res: Response) => {
+  try {
+    const idToupdate = new ObjectId(req.params.recipeId);
+    const updatedRecipe = await RecipeModel.findOneAndUpdate(
+      { _id: idToupdate },
+      { file: req.file.filename }
+    );
+
+    return res.json(updatedRecipe);
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -110,4 +123,5 @@ export {
   getAllUsersRecipes,
   getMyRecipes,
   getMyRecipesImages,
+  uploadImageToRecipe,
 };

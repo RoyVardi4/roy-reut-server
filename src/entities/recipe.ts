@@ -5,7 +5,7 @@ interface IRecipe extends Document {
   instructions: string;
   publisherUserId?: string;
   readyInMinutes?: number;
-  imagePath?: string;
+  file?: string;
 }
 
 const recipeSchema = new Schema({
@@ -22,8 +22,8 @@ const recipeSchema = new Schema({
   readyInMinutes: {
     type: Number,
   },
-  image_path: {
-    type: String,
+  file: {
+    type: String
   },
 });
 
