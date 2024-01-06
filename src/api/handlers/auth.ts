@@ -5,8 +5,7 @@ import jwt from "jsonwebtoken";
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
   console.log("register");
-  const email: string = req.body.email;
-  const password: string = req.body.password;
+  const {email, password} = req.body.user
 
   if (!email || !password) {
     return sendError(res);
@@ -26,7 +25,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     const newUser = await user.save();
-    res.status(200).send(newUser);
+    res.status(200).send(newUser.email);
   } catch (err) {
     return sendError(
       res,
@@ -39,8 +38,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   console.log("login");
-  const email: string = req.body.email;
-  const password: string = req.body.password;
+  const {email, password} = req.body.user
 
   if (!email || !password) {
     return sendError(res, "one of the fields is missing");
@@ -67,13 +65,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     );
 
     res
-      .status(200)
-      .status(200)
-      .header({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      })
-      .send(user.email);
+        .status(200)
+        .send({
+            'accessToken':accessToken,
+            'refreshToken':refreshToken
+        })
   } catch (err) {
     return sendError(
       res,
@@ -91,10 +87,12 @@ const sendError = (res: Response, message?: string) => {
 
 const logout = async (req: Request, res: Response, next: NextFunction) => {
   console.log("logout");
-  res.status(400).send({
-    status: "fail",
-    message: "not implemented",
-  });
+  res
+  .status(200)
+  .send({
+      'accessToken':'',
+      'refreshToken':''
+  })
 };
 
 const refreshToken = async (
@@ -126,7 +124,12 @@ const refreshToken = async (
           { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION }
         );
 
-        res.header("accessToken", accessToken)
+        // todo: needs to be fixed. to be continued
+        res
+        .send({
+            'accessToken':accessToken,
+            'refreshToken':refreshToken
+        })
         next()
       } catch (err) {
         return sendError(
