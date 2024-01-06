@@ -4,6 +4,7 @@ import cors from "cors";
 import methodOverride from "method-override";
 import routes from "../api";
 import config from "../config";
+
 export default ({ app }: { app: express.Application }) => {
   /**
    * API Status Check !!
