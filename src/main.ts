@@ -7,11 +7,13 @@ import mongoose from "mongoose";
 async function startServer() {
   const app: express.Application = express();
   await libs.default({ serverApp: app });
-  mongoose.connect(process.env.DATABASE_URL)
-  .then(() => 
-  app &&
-  app.listen(config.port, () => {
-    Logger.info(`
+  mongoose
+    .connect(process.env.DATABASE_URL, { dbName: process.env.DATABASE_NAME || 'roy-reut-db'})
+    .then(
+      () =>
+        app &&
+        app.listen(config.port, () => {
+          Logger.info(`
                 /|");
  _______________)|..");
 <'______________<(,_|)");
@@ -38,8 +40,10 @@ async function startServer() {
      |x\\       _(____''.__                  
     --\\__|--"); 
 
-  `)}))
-  .catch((error) => console.log(error.message));
+  `);
+        })
+    )
+    .catch((error) => console.log(error.message));
 }
 
 startServer();
