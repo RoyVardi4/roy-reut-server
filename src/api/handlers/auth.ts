@@ -5,8 +5,7 @@ import jwt from "jsonwebtoken";
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
   console.log("register");
-  const email: string = req.body.user.email;
-  const password: string = req.body.user.password;
+  const {email, password} = req.body.user
 
   if (!email || !password) {
     return sendError(res);
@@ -39,8 +38,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   console.log("login");
-  const email: string = req.body.user.email;
-  const password: string = req.body.user.password;
+  const {email, password} = req.body.user
 
   if (!email || !password) {
     return sendError(res, "one of the fields is missing");

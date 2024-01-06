@@ -4,7 +4,6 @@ import cors from "cors";
 import methodOverride from "method-override";
 import routes from "../api";
 import config from "../config";
-import cookieParser from "cookie-parser"
 
 export default ({ app }: { app: express.Application }) => {
   /**
@@ -24,7 +23,6 @@ export default ({ app }: { app: express.Application }) => {
   app.use(cors());
   app.use(methodOverride());
   app.use(bodyParser.json());
-  app.use(cookieParser())
 
   // Load API routes with /api
   app.use(config.api.prefix, routes());
