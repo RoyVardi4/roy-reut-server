@@ -4,7 +4,6 @@ import {
   getRecipeInfomationById,
   getRecipesByComplextQuery,
   getAllUsersRecipes,
-  getMyRecipes,
   getMyRecipesImages,
   uploadImageToRecipe,
 } from "../handlers/recipes";
@@ -19,7 +18,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const [fileType, fileExtention] = file.mimetype.split("/");
-    
+
     if (fileType !== "image") 
       return cb(Error("file ext must be an image type"), null);
 
@@ -28,10 +27,10 @@ const storage = multer.diskStorage({
       return cb(Error("invalid file name"), null);
 
     cb(null, `${req.params.recipeId}.${fileExtention}`);
-  },
+  }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage, limits: { fileSize: 8 * 1024 * 1024} });
 
 export default (app: Router) => {
   app.use("/recipes", route);
@@ -39,7 +38,6 @@ export default (app: Router) => {
   route.get("/complexSearch", getRecipesByComplextQuery);
   route.get("/:id/information", getRecipeInfomationById);
   route.get("/users", getAllUsersRecipes);
-  route.get("/my", getMyRecipes);
   route.get("/img/:recipeId", getMyRecipesImages);
 
   route.post("/", createNewRecipe);

@@ -48,25 +48,7 @@ const getRecipesByComplextQuery = async (req: Request, res: Response) => {
 
 const getAllUsersRecipes = async (req: Request, res: Response) => {
   try {
-    const results = await RecipeModel.find().where({
-      $or: [
-        { publisherUserId: req["user"]?._id },
-        { publisherUserId: null },
-        { publisherUserId: undefined },
-        { publisherUserId: { $exists: false } },
-      ],
-    });
-    return res.json(results);
-  } catch (error) {
-    return res.status(500).send(error);
-  }
-};
-
-const getMyRecipes = async (req: Request, res: Response) => {
-  try {
-    const results = await RecipeModel.find().where({
-      publisherUserId: req["user"]?._id,
-    });
+    const results = await RecipeModel.find();
     return res.json(results);
   } catch (error) {
     return res.status(500).send(error);
@@ -87,16 +69,29 @@ const getMyRecipesImages = async (req: Request, res: Response) => {
 };
 
 const createNewRecipe = async (req: Request, res: Response) => {
-  const { title, instructions, publisherUserId } = req.body.recipe;
+  const { _id, title, instructions, publisherUserId } = req.body.recipe;
   try {
-    const recipe = new RecipeModel({
-      title: title,
-      instructions: instructions,
-      publisherUserId: publisherUserId,
-    });
+    // update recipe
+    if (_id) {
+      const updatedRecipe = await RecipeModel.findOneAndUpdate(
+        { _id: new ObjectId(_id) },
+        {
+          title: title,
+          instructions: instructions,
+        }
+      );
+      return res.json(updatedRecipe);
+    } else {
+      // create new recipe
+      const recipe = new RecipeModel({
+        title: title,
+        instructions: instructions,
+        publisherUserId: publisherUserId,
+      });
 
-    const newRecipe = await recipe.save();
-    return res.json(newRecipe);
+      const newRecipe = await recipe.save();
+      return res.json(newRecipe);
+    }
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -121,7 +116,6 @@ export {
   getRecipesByComplextQuery,
   createNewRecipe,
   getAllUsersRecipes,
-  getMyRecipes,
   getMyRecipesImages,
   uploadImageToRecipe,
 };
