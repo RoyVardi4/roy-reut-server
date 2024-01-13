@@ -39,7 +39,7 @@ export default (app: Router) => {
   route.get("/complexSearch", authenticate, getRecipesByComplextQuery);
   route.get("/:id/information", authenticate, getRecipeInfomationById);
   route.get("/users", authenticate, getAllUsersRecipes);
-  route.get("/img/:recipeId", authenticate, getMyRecipesImages);
+  route.get("/img/:recipeId", getMyRecipesImages);
 
   route.post("/", authenticate, createNewRecipe);
   route.post(
