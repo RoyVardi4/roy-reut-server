@@ -100,10 +100,11 @@ const refreshToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const refreshToken = req.headers.refreshToken as string;
+  console.log('refresh')
+  const refreshToken = req.headers.refreshtoken as string;
 
   if (!refreshToken)
-    return res.sendStatus(401).send("Access Denied. No token provided.");
+    return res.status(401).send("Access Denied. No token provided.");
 
   jwt.verify(
     refreshToken,
@@ -124,13 +125,12 @@ const refreshToken = async (
           { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION }
         );
 
-        // todo: needs to be fixed. to be continued
         res
+        .status(200)
         .send({
             'accessToken':accessToken,
             'refreshToken':refreshToken
         })
-        next()
       } catch (err) {
         return sendError(
           res,

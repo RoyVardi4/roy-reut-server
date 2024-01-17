@@ -8,6 +8,7 @@ import {
   uploadImageToRecipe,
 } from "../handlers/recipes";
 import multer from "multer";
+import { authenticate } from "../middlewares/authMiddleware";
 
 const route = Router();
 
@@ -35,14 +36,15 @@ const upload = multer({ storage: storage, limits: { fileSize: 8 * 1024 * 1024} }
 export default (app: Router) => {
   app.use("/recipes", route);
 
-  route.get("/complexSearch", getRecipesByComplextQuery);
-  route.get("/:id/information", getRecipeInfomationById);
-  route.get("/users", getAllUsersRecipes);
+  route.get("/complexSearch", authenticate, getRecipesByComplextQuery);
+  route.get("/:id/information", authenticate, getRecipeInfomationById);
+  route.get("/users", authenticate, getAllUsersRecipes);
   route.get("/img/:recipeId", getMyRecipesImages);
 
-  route.post("/", createNewRecipe);
+  route.post("/", authenticate, createNewRecipe);
   route.post(
     "/img/:recipeId",
+    authenticate,
     upload.single("recipeImage"),
     uploadImageToRecipe
   );

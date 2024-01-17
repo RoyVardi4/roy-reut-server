@@ -13,5 +13,5 @@ export default (app: Router) => {
 
   route.post('/logout', authenticate, logout)
 
-  route.post('/refreshToken', refreshToken)
+  route.get('/refreshToken', refreshToken)
 };
