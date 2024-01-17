@@ -104,7 +104,7 @@ const refreshToken = async (
   const refreshToken = req.headers.refreshtoken as string;
 
   if (!refreshToken)
-    return res.send(401).send("Access Denied. No token provided.");
+    return res.status(401).send("Access Denied. No token provided.");
 
   jwt.verify(
     refreshToken,
