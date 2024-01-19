@@ -2,10 +2,34 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import methodOverride from "method-override";
+import swaggerUI from "swagger-ui-express"
+import swaggerJsDoc from "swagger-jsdoc"
 import routes from "../api";
 import config from "../config";
 
 export default ({ app }: { app: express.Application }) => {
+
+  // Swagger  
+  if (process.env.NODE_ENV == "development") {
+    const options = {
+      definition: {
+        openapi: "3.0.0",
+        info: {
+          title: "Web Dev 2022 REST API",
+          version: "1.0.0",
+          description: "REST server including authentication using JWT",
+        },
+        servers: [{ url: "http://localhost:3000" }],
+      },
+      apis: ["./src/api/routes/*.ts"],
+    };
+    const specs = swaggerJsDoc(options);
+    app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+    app.use("/roy", (req, res) => res.send("yofi"));
+  }
+
+
+
   /**
    * API Status Check !!
    */
