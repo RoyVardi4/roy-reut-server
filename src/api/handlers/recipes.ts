@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import path from "path";
 import RecipeModel from "../../entities/recipe";
 import { ObjectId } from "mongodb";
+import UserModel from "../../entities/user";
 
 const RECIPES_API =
   process.env.EXTERNAL_API || "https://api.spoonacular.com/recipes";
@@ -48,7 +49,7 @@ const getRecipesByComplextQuery = async (req: Request, res: Response) => {
 
 const getAllUsersRecipes = async (req: Request, res: Response) => {
   try {
-    const results = await RecipeModel.find();
+    const results = await RecipeModel.find().populate('author');
     return res.json(results);
   } catch (error) {
     return res.status(500).send(error);
@@ -69,8 +70,10 @@ const getMyRecipesImages = async (req: Request, res: Response) => {
 };
 
 const createNewRecipe = async (req: Request, res: Response) => {
-  const { _id, title, instructions, publisherUserId } = req.body.recipe;
+  const { _id, title, instructions } = req.body.recipe;
+  const publisherUserId = req["user"];
   try {
+    const user = await UserModel.findById(new ObjectId(publisherUserId._id))
     // update recipe
     if (_id) {
       const updatedRecipe = await RecipeModel.findOneAndUpdate(
@@ -86,7 +89,7 @@ const createNewRecipe = async (req: Request, res: Response) => {
       const recipe = new RecipeModel({
         title: title,
         instructions: instructions,
-        publisherUserId: publisherUserId,
+        author: user._id,
       });
 
       const newRecipe = await recipe.save();
