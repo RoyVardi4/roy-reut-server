@@ -4,6 +4,7 @@ interface IRecipe extends Document {
   title: string;
   instructions: string;
   author?: Schema.Types.ObjectId;
+  comments?: [Schema.Types.ObjectId];
   readyInMinutes?: number;
   file?: string;
 }
@@ -17,6 +18,10 @@ const recipeSchema = new Schema({
     type: String,
   },
   author: { type: Schema.Types.ObjectId, ref: "User" },
+  comments: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Comment'
+  },
   readyInMinutes: {
     type: Number,
   },

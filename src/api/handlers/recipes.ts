@@ -4,6 +4,7 @@ import path from "path";
 import RecipeModel from "../../entities/recipe";
 import { ObjectId } from "mongodb";
 import UserModel from "../../entities/user";
+import CommentModel from "../../entities/comment";
 
 const RECIPES_API =
   process.env.EXTERNAL_API || "https://api.spoonacular.com/recipes";
@@ -49,12 +50,24 @@ const getRecipesByComplextQuery = async (req: Request, res: Response) => {
 
 const getAllUsersRecipes = async (req: Request, res: Response) => {
   try {
-    const results = await RecipeModel.find().populate('author');
+    const results = await RecipeModel.find().populate('author').populate('comments');
     return res.json(results);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
+
+const postComment = async (req: Request, res: Response) => {
+  const recipe = await RecipeModel.findById(new ObjectId('65abd0aecc3205c5618b58a5'));
+  const comment = new CommentModel({
+    author: "vardiroy4@gmail.com",
+    desc: "blablabl"
+  })
+  const savedComment = await comment.save()
+  recipe.comments = [savedComment._id]
+  recipe.save()
+  return res.json()
+}
 
 const getMyRecipesImages = async (req: Request, res: Response) => {
   try {
@@ -120,5 +133,6 @@ export {
   createNewRecipe,
   getAllUsersRecipes,
   getMyRecipesImages,
+  postComment,
   uploadImageToRecipe,
 };
