@@ -141,9 +141,17 @@ const uploadImageToRecipe = async (req: Request, res: Response) => {
   }
 };
 
-const deleteRecipe = () => {
-  
-}
+const deleteRecipe = async (req: Request, res: Response) => {
+  const { recipeId } = req.params;
+  try {
+    const recipe = await RecipeModel.findById(new ObjectId(recipeId));
+    await CommentModel.deleteMany({_id: {$in: recipe.comments}})
+    const deletedRecipe = await RecipeModel.deleteOne(new ObjectId(recipeId));
+    return res.json(deletedRecipe)
+  } catch(e) {
+    return res.status(500).send(e)
+  }
+};
 
 export {
   getRecipeInfomationById,
@@ -154,4 +162,5 @@ export {
   getMyRecipesImages,
   postComment,
   uploadImageToRecipe,
+  deleteRecipe
 };

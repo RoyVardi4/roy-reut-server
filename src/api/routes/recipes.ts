@@ -8,6 +8,7 @@ import {
   uploadImageToRecipe,
   postComment,
   getRecipeComments,
+  deleteRecipe,
 } from "../handlers/recipes";
 import multer from "multer";
 import { authenticate } from "../middlewares/authMiddleware";
@@ -51,5 +52,8 @@ export default (app: Router) => {
     authenticate,
     upload.single("recipeImage"),
     uploadImageToRecipe
-  );
+    );
+    
+  route.delete("/:recipeId", authenticate, deleteRecipe);
+  
 };
