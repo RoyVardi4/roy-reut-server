@@ -7,6 +7,7 @@ import {
   getMyRecipesImages,
   uploadImageToRecipe,
   postComment,
+  getRecipeComments,
 } from "../handlers/recipes";
 import multer from "multer";
 import { authenticate } from "../middlewares/authMiddleware";
@@ -40,6 +41,7 @@ export default (app: Router) => {
   route.get("/complexSearch", authenticate, getRecipesByComplextQuery);
   route.get("/:id/information", authenticate, getRecipeInfomationById);
   route.get("/users", authenticate, getAllUsersRecipes);
+  route.get("/users/:recipeId", authenticate, getRecipeComments);
   route.get("/img/:recipeId", getMyRecipesImages);
 
   route.post("/", authenticate, createNewRecipe);

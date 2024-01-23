@@ -50,24 +50,38 @@ const getRecipesByComplextQuery = async (req: Request, res: Response) => {
 
 const getAllUsersRecipes = async (req: Request, res: Response) => {
   try {
-    const results = await RecipeModel.find().populate('author').populate('comments');
+    const results = await RecipeModel.find().populate("author");
     return res.json(results);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
+const getRecipeComments = async (req: Request, res: Response) => {
+  try {
+    const result = await RecipeModel.findById(
+      new ObjectId(req.params.recipeId)
+    ).populate("comments");
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
 const postComment = async (req: Request, res: Response) => {
-  const recipe = await RecipeModel.findById(new ObjectId('65abd0aecc3205c5618b58a5'));
+  const { payload, recipeId } = req.body.comment;
+  const { desc } = payload;
+  const recipe = await RecipeModel.findById(new ObjectId(recipeId));
+  const user = await UserModel.findById(new ObjectId(req["user"]?._id));
   const comment = new CommentModel({
-    author: "vardiroy4@gmail.com",
-    desc: "blablabl"
-  })
-  const savedComment = await comment.save()
-  recipe.comments = [savedComment._id]
-  recipe.save()
-  return res.json()
-}
+    author: user.email,
+    desc: desc as string,
+  });
+  const savedComment = await comment.save();
+  recipe.comments.push(savedComment._id);
+  recipe.save();
+  return res.json();
+};
 
 const getMyRecipesImages = async (req: Request, res: Response) => {
   try {
@@ -86,7 +100,7 @@ const createNewRecipe = async (req: Request, res: Response) => {
   const { _id, title, instructions } = req.body.recipe;
   const publisherUserId = req["user"];
   try {
-    const user = await UserModel.findById(new ObjectId(publisherUserId._id))
+    const user = await UserModel.findById(new ObjectId(publisherUserId._id));
     // update recipe
     if (_id) {
       const updatedRecipe = await RecipeModel.findOneAndUpdate(
@@ -127,11 +141,16 @@ const uploadImageToRecipe = async (req: Request, res: Response) => {
   }
 };
 
+const deleteRecipe = () => {
+  
+}
+
 export {
   getRecipeInfomationById,
   getRecipesByComplextQuery,
   createNewRecipe,
   getAllUsersRecipes,
+  getRecipeComments,
   getMyRecipesImages,
   postComment,
   uploadImageToRecipe,
