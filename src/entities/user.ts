@@ -2,7 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose'
 
 interface IUser extends Document {
     password: string;
-    email: string
+    email: string;
+    status: string;
+    file: string;
 }
 
 const userSchema = new Schema({
@@ -13,6 +15,12 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    status: {
+        type: String
+    },
+    file: {
+        type: String
     }
 })
 

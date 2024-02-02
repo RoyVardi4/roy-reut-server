@@ -8,7 +8,9 @@ async function startServer() {
   const app: express.Application = express();
   await libs.default({ serverApp: app });
   mongoose
-    .connect(process.env.DATABASE_URL, { dbName: process.env.DATABASE_NAME || 'roy-reut-db'})
+    .connect(process.env.DATABASE_URL, {
+      dbName: process.env.DATABASE_NAME || "roy-reut-db",
+    })
     .then(
       () =>
         app &&

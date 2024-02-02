@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import path from "path";
 import RecipeModel from "../../entities/recipe";
 import { ObjectId } from "mongodb";
+import UserModel from "../../entities/user";
+import CommentModel from "../../entities/comment";
 
 const RECIPES_API =
   process.env.EXTERNAL_API || "https://api.spoonacular.com/recipes";
@@ -48,11 +50,37 @@ const getRecipesByComplextQuery = async (req: Request, res: Response) => {
 
 const getAllUsersRecipes = async (req: Request, res: Response) => {
   try {
-    const results = await RecipeModel.find();
+    const results = await RecipeModel.find().populate("author");
     return res.json(results);
   } catch (error) {
     return res.status(500).send(error);
   }
+};
+
+const getRecipeComments = async (req: Request, res: Response) => {
+  try {
+    const result = await RecipeModel.findById(
+      new ObjectId(req.params.recipeId)
+    ).populate("comments");
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+const postComment = async (req: Request, res: Response) => {
+  const { payload, recipeId } = req.body.comment;
+  const { desc } = payload;
+  const recipe = await RecipeModel.findById(new ObjectId(recipeId));
+  const user = await UserModel.findById(new ObjectId(req["user"]?._id));
+  const comment = new CommentModel({
+    author: user.email,
+    desc: desc as string,
+  });
+  const savedComment = await comment.save();
+  recipe.comments.push(savedComment._id);
+  recipe.save();
+  return res.json();
 };
 
 const getMyRecipesImages = async (req: Request, res: Response) => {
@@ -69,8 +97,10 @@ const getMyRecipesImages = async (req: Request, res: Response) => {
 };
 
 const createNewRecipe = async (req: Request, res: Response) => {
-  const { _id, title, instructions, publisherUserId } = req.body.recipe;
+  const { _id, title, instructions } = req.body.recipe;
+  const publisherUserId = req["user"];
   try {
+    const user = await UserModel.findById(new ObjectId(publisherUserId._id));
     // update recipe
     if (_id) {
       const updatedRecipe = await RecipeModel.findOneAndUpdate(
@@ -86,7 +116,7 @@ const createNewRecipe = async (req: Request, res: Response) => {
       const recipe = new RecipeModel({
         title: title,
         instructions: instructions,
-        publisherUserId: publisherUserId,
+        author: user._id,
       });
 
       const newRecipe = await recipe.save();
@@ -111,11 +141,26 @@ const uploadImageToRecipe = async (req: Request, res: Response) => {
   }
 };
 
+const deleteRecipe = async (req: Request, res: Response) => {
+  const { recipeId } = req.params;
+  try {
+    const recipe = await RecipeModel.findById(new ObjectId(recipeId));
+    await CommentModel.deleteMany({_id: {$in: recipe.comments}})
+    const deletedRecipe = await RecipeModel.deleteOne(new ObjectId(recipeId));
+    return res.json(deletedRecipe)
+  } catch(e) {
+    return res.status(500).send(e)
+  }
+};
+
 export {
   getRecipeInfomationById,
   getRecipesByComplextQuery,
   createNewRecipe,
   getAllUsersRecipes,
+  getRecipeComments,
   getMyRecipesImages,
+  postComment,
   uploadImageToRecipe,
+  deleteRecipe
 };
