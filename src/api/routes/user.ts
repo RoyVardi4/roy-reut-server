@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserInfo, getUserPhoto, uploadImage } from "../handlers/user";
+import { getUserInfo, getUserPhoto, uploadImage, editUser } from "../handlers/user";
 import multer from "multer";
 import { authenticate } from "../middlewares/authMiddleware";
 
@@ -40,10 +40,5 @@ export default (app: Router) => {
     upload.single("profilePicture"),
     uploadImage
   );
-  //   route.post(
-  //     "/img/:recipeId",
-  //     authenticate,
-  //     upload.single("recipeImage"),
-  //     // uploadImageToRecipe
-  //     );
+  route.post("/myInfo", authenticate, editUser);
 };

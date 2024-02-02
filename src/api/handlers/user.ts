@@ -27,16 +27,29 @@ const getUserPhoto = async (req: Request, res: Response) => {
 const uploadImage = async (req: Request, res: Response) => {
   try {
     const userEmail = req.params.userEmail;
-    const updatedRecipe = await UserModel.findOne(
-      { email: userEmail }
-    );
-    updatedRecipe.file = req.file.filename
-    updatedRecipe.save()
+    const userToUpdate = await UserModel.findOne({ email: userEmail });
+    userToUpdate.file = req.file.filename;
+    userToUpdate.save();
 
-    return res.json(updatedRecipe);
+    return res.json(userToUpdate);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-export { getUserInfo, getUserPhoto, uploadImage };
+const editUser = async (req: Request, res: Response) => {
+  try {
+    const userStatus = req.body.status;
+    const userToUpdate = await UserModel.findById(
+      new ObjectId(req["user"]._id)
+    );
+    userToUpdate.status = userStatus;
+    userToUpdate.save();
+
+    return res.json(userToUpdate);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+export { getUserInfo, getUserPhoto, uploadImage, editUser };
