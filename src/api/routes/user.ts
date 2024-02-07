@@ -30,8 +30,33 @@ const upload = multer({
 });
 
 export default (app: Router) => {
+  
+/**
+* @swagger
+*   tags:
+*     name: User
+*     description: The User API
+*/
+
   app.use("/users", route);
 
+  
+  /**
+ * @swagger
+ * /api/users/myInfo:
+ *   get:
+ *     summary: Returns user info by id
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: user info
+ *       '401':
+ *         description: access denied
+ *       '500':
+ *         description: internal server error
+ */
   route.get("/myInfo", authenticate, getUserInfo);
   route.get("/myPhoto/:userEmail", getUserPhoto);
   route.post(
