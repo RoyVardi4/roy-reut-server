@@ -15,17 +15,16 @@ export default ({ app }: { app: express.Application }) => {
       definition: {
         openapi: "3.0.0",
         info: {
-          title: "Web Dev 2022 REST API",
+          title: "Web Dev Reut and Roy",
           version: "1.0.0",
-          description: "REST server including authentication using JWT",
+          description: "REST server by Reut and Roy",
         },
         servers: [{ url: "http://localhost:3000" }],
       },
-      apis: ["./src/api/routes/*.ts"],
+      apis: ["src/api/routes/*.ts"],
     };
     const specs = swaggerJsDoc(options);
     app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
-    app.use("/roy", (req, res) => res.send("yofi"));
   }
 
 
