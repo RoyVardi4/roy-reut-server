@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { getUserInfo, getUserPhoto, uploadImage, editUser } from "../handlers/user";
+import {
+  getUserInfo,
+  getUserPhoto,
+  uploadImage,
+  editUser,
+} from "../handlers/user";
 import multer from "multer";
 import { authenticate } from "../middlewares/authMiddleware";
 
@@ -30,40 +35,77 @@ const upload = multer({
 });
 
 export default (app: Router) => {
-  
-/**
-* @swagger
-*   tags:
-*     name: User
-*     description: The User API
-*/
+  /**
+   * @swagger
+   *   tags:
+   *     name: User
+   *     description: The User API
+   */
 
   app.use("/users", route);
 
-  
   /**
- * @swagger
- * /api/users/myInfo:
- *   get:
- *     summary: Returns user info by id
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       '200':
- *         description: user info
- *       '401':
- *         description: access denied
- *       '500':
- *         description: internal server error
- */
+   * @swagger
+   * /api/users/myInfo:
+   *   get:
+   *     summary: Returns user info by id
+   *     tags: [User]
+   *     responses:
+   *       '200':
+   *         description: user info
+   *       '401':
+   *         description: access denied
+   *       '500':
+   *         description: internal server error
+   */
   route.get("/myInfo", authenticate, getUserInfo);
+
+  /**
+   * @swagger
+   * /api/users/myPhoto/:userEmail:
+   *   get:
+   *     summary: Returns user photo
+   *     tags: [User]
+   *     responses:
+   *       '200':
+   *         description: user photo
+   *       '500':
+   *         description: internal server error
+   */
   route.get("/myPhoto/:userEmail", getUserPhoto);
+
+  /**
+   * @swagger
+   * /api/users/myPhoto/:userEmail:
+   *   post:
+   *     summary: attach photo to user
+   *     tags: [User]
+   *     responses:
+   *       '200':
+   *         description: save new user photo
+   *       '500':
+   *         description: internal server error
+   */
   route.post(
     "/myPhoto/:userEmail",
     authenticate,
     upload.single("profilePicture"),
     uploadImage
   );
+
+  /**
+   * @swagger
+   * /api/users/myInfo:
+   *   post:
+   *     summary: saves user data to db
+   *     tags: [User]
+   *     responses:
+   *       '200':
+   *         description: user saved successfully
+   *       '401':
+   *         description: access denied
+   *       '500':
+   *         description: internal server error
+   */
   route.post("/myInfo", authenticate, editUser);
 };

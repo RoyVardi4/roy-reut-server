@@ -34,13 +34,50 @@ const route = Router();
 */
 
 export default (app: Router) => {
-  
   app.use("/auth", route);
 
+  /**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register new user to application 
+ *     tags: [Auth]
+ *     responses:
+ *       '200':
+ *         description: returns the saved new user email
+ *       '400':
+ *         description: username is already 
+ *       '500':
+ *         description: unexpected server error
+ */
   route.post("/register", register);
-
+  
+  /**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Logs in the requested user 
+ *     tags: [Auth]
+ *     responses:
+ *       '200':
+ *         description: returns valid refresh and access token
+ *       '400':
+ *         description: input is incorrect
+ *       '500':
+ *         description: unexpected server error
+ */
   route.post("/login", login);
 
+  /**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Logs out the connected user 
+ *     tags: [Auth]
+ *     responses:
+ *       '200':
+ *         description: clears the refresh and access token
+ */
   route.post("/logout", authenticate, logout);
 
   /**
@@ -52,8 +89,8 @@ export default (app: Router) => {
  *     responses:
  *       '200':
  *         description: access permited
- *       '401':
- *         description: access denied
+ *       '403':
+ *         description: access denied - invalid request
  */
   route.get("/refreshToken", refreshToken);
 };
