@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest -–coverage --detectOpenHandles --forceExit",
+    "test": "jest --runInBand --coverage --detectOpenHandles --forceExit",
     "lint": "npx eslint . --fix",
     "start": "npx ts-node src/main.ts",
     "dev": "tsc && ts-node-dev --respawn --transpile-only ./src/main.ts",
