@@ -1,51 +1,17 @@
-import express from "express";
+import express, { Application } from "express";
 import config from "./config/index";
 import Logger from "./lib/logger";
-import * as libs from "./lib";
-import mongoose from "mongoose";
+import appPromise from "./app";
 
-async function startServer() {
-  const app: express.Application = express();
-  await libs.default({ serverApp: app });
-  mongoose
-    .connect(process.env.DATABASE_URL, {
-      dbName: process.env.DATABASE_NAME || "roy-reut-db",
-    })
-    .then(
-      () =>
-        app &&
-        app.listen(config.port, () => {
-          Logger.info(`
-                /|");
- _______________)|..");
-<'______________<(,_|)");
-          .((()))| ))");
-          (======)| '\\");
-         ((( \"_\"()|_ \\");
-        '()))(_)/_/ ' )");
-        .--/_\\ /(  /./");
-       /'._.--\\ .-(_/");
-      / / )\\___:___)");
-     ( -.'.._  |  /");
-      \\  \\_\\ ( | )");
-       '. /\\)_(_)|");
-         '-|  XX |");
-          %%%%%%%%");
-         / %%%%%%%\\");
-        ( /.-'%%%. \\");
-       /(.'     \\ :|");
-      / ,|       ) )");
-    _|___)      (__|_.		   ⚡️-------------------------------------------------------⚡️
-    )___/       )___(			      ⚡️|	Running Node Server for ${process.env.NODE_ENV}	|⚡️
-     |x/      mrf\\ >			      
-     |x)         / '.			      ⚡️|	    Ready now on port: ${config.port}           |⚡️
-     |x\\       _(____''.__                  
-    --\\__|--"); 
-
+appPromise &&
+  appPromise.then((app) => {
+    const myApp = app as Application;
+    myApp.listen(config.port, () => {
+      Logger.info(`
+  ⚡️---------------------------------------------------⚡️
+  ⚡️|	Running Node Server for ${process.env.NODE_ENV}	|⚡️
+  ⚡️|	    Ready now on port: ${config.port}           |⚡️
+  ⚡️---------------------------------------------------⚡️
   `);
-        })
-    )
-    .catch((error) => console.log(error.message));
-}
-
-startServer();
+    });
+  });

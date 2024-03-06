@@ -6,7 +6,7 @@ import config from "../config/index";
 
 // import injector from './injector'
 
-export default async ({ serverApp }: { serverApp: express.Application }) => {
-  await expressLoader({ app: serverApp });
+export default ({ serverApp }: { serverApp: express.Application }) => {
+  expressLoader({ app: serverApp });
   Logger.info(`${config.serverType} ready to go!!`);
 };
