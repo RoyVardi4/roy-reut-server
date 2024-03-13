@@ -77,7 +77,7 @@ web_modules/
 .yarn-integrity
 
 # images 
-uploads
+uploads/*
 
 # dotenv environment variable files
 .env.development.local
