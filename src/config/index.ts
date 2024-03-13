@@ -2,9 +2,6 @@ import dotenv from "dotenv";
 
 // for development
 const envFound = dotenv.config();
-
-process.env.NODE_ENV = process.env.NODE_ENV || "development";
-
 if (!envFound) {
   // If no .env file.
   throw new Error("Couldn't find .env file");

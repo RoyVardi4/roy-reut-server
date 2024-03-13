@@ -2,5 +2,5 @@ FROM node:18-alpine
 WORKDIR /app
 COPY . .
 RUN npm i
-CMD node server.js
-EXPOSE 8080
+CMD npx ts-node src/main.ts
+EXPOSE 443

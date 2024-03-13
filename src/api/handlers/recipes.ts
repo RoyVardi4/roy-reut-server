@@ -69,18 +69,22 @@ const getRecipeComments = async (req: Request, res: Response) => {
 };
 
 const postComment = async (req: Request, res: Response) => {
-  const { payload, recipeId } = req.body.comment;
-  const { desc } = payload;
-  const recipe = await RecipeModel.findById(new ObjectId(recipeId));
-  const user = await UserModel.findById(new ObjectId(req["user"]?._id));
-  const comment = new CommentModel({
-    author: user.email,
-    desc: desc as string,
-  });
-  const savedComment = await comment.save();
-  recipe.comments.push(savedComment._id);
-  recipe.save();
-  return res.json();
+  try {
+    const { payload, recipeId } = req.body.comment;
+    const { desc } = payload;
+    const recipe = await RecipeModel.findById(new ObjectId(recipeId));
+    const user = await UserModel.findById(new ObjectId(req["user"]?._id));
+    const comment = new CommentModel({
+      author: user.email,
+      desc: desc as string,
+    });
+    const savedComment = await comment.save();
+    recipe.comments.push(savedComment._id);
+    const r = recipe.save();
+    return res.json(r);
+  } catch(e) {
+    return res.status(500).send(e);
+  }
 };
 
 const getMyRecipesImages = async (req: Request, res: Response) => {
